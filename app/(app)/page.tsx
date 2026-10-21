@@ -52,6 +52,9 @@ export default async function TodayPage({
     todo.push({ text: `Review and activate ${draftDisclosures} disclosure wordings (nothing can be scheduled until you do)`, href: "/compliance", tag: "required" });
   if (productsTotal === 0)
     todo.push({ text: "Add your first product (paste a product URL)", href: "/products/new" });
+  if (inReview > 0) todo.push({ text: `${inReview} content packages waiting for your approval`, href: "/approvals", tag: "review" });
+  if (approved > 0 && inReview === 0) todo.push({ text: `${approved} approved products: make content for them`, href: "/content" });
+  if (scheduled > 0) todo.push({ text: `${scheduled} posts scheduled: post them and tap Mark posted`, href: "/calendar" });
   if (candidates > 0) todo.push({ text: `${candidates} products waiting in your Research Inbox`, href: "/inbox" });
 
   return (

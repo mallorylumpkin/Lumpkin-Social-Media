@@ -1,6 +1,19 @@
-# Affiliate Commerce OS: Phase 1
+# Affiliate Commerce OS: Phases 1 to 3
 
-Phase 1 includes sign-in, the dashboard shell, the product research inbox, manual product entry, explainable scoring, Integrations (tracking IDs, extra social accounts, Pinterest boards), Compliance (disclosure wording), Settings, and Storefront collections. Content generation, the approval queue, and publishing arrive in later phases; their database tables already exist.
+Phase 1 includes sign-in, the dashboard shell, the product research inbox, manual product entry, explainable scoring, Integrations (tracking IDs, extra social accounts, Pinterest boards), Compliance (disclosure wording), Settings, and Storefront collections. **Phase 3 adds** the Content Studio (free AI or no-AI drafts), a rules check on every package, the Approval Queue, and a Calendar with copy-ready posts and a "Mark posted" step.
+
+## Updating from Phase 1 or 2 to Phase 3 (about 10 minutes)
+1. **Supabase > SQL Editor:** paste and run the file `db/009_ai_usage_and_content_settings.sql` (safe to run twice).
+2. **Free AI key:** go to aistudio.google.com/apikey, sign in with Google, create a key.
+3. **Netlify > Site configuration > Environment variables:** add `GEMINI_API_KEY` = your key (do NOT tick any "expose to browser" option). Then **Deploys > Trigger deploy**.
+4. Replace the files in your GitHub repo with the ones in this zip and push (Netlify rebuilds by itself).
+5. In the app: Content Studio > tick an approved product > paste 2 to 4 facts from its listing > **Generate with AI**. Then Approval Queue > Approve > Schedule. At post time open Calendar, copy, post, tap **Mark posted**.
+
+Without a key the **Quick draft (no AI)** button still works.
+
+The free Gemini tier is rate limited (Google shows your exact limits in AI Studio) and Google may use free-tier prompts to improve its products, so the app only sends product names and the facts you type. If you ever see "model not recognised", change `ai.model` in Settings.
+
+**Posting is manual-assist for now:** approved posts appear on the Calendar ready to copy. Automatic posting needs Instagram's API (needs a Facebook Page, which you can add any time), TikTok app review, and Pinterest Standard access.
 
 **Status:** the scoring and URL logic passed 12 automated tests. The full app has not been built or run yet (the build environment could not reach the npm registry). Your first `npm run build` may show a small error; paste it back and it gets fixed in one pass.
 

@@ -4,9 +4,6 @@ import { requireOrg } from "@/lib/org";
 
 const SECTIONS: Record<string, { title: string; text: string; phase: string }> = {
   discover: { title: "Discover", text: "Scored product cards from trend signals and your research.", phase: "Phase 2 (trend signals and sources)" },
-  content: { title: "Content Studio", text: "Faceless content packages: hooks, scripts, shot lists, captions, and disclosures for Instagram, TikTok, and Pinterest.", phase: "Phase 3 (AI content generation)" },
-  approvals: { title: "Approval Queue", text: "One-tap approval of finished posts. Approved posts publish at their scheduled time.", phase: "Phase 3 (right after content generation)" },
-  calendar: { title: "Calendar", text: "Your posting schedule across channels, with pacing for 5+ Instagram stories, 1 post, and 2 to 3 TikToks a day.", phase: "Phase 4 (scheduling and publishing)" },
   analytics: { title: "Analytics", text: "Clicks, commissions, and earnings per click from your imported reports, labeled reported or estimated.", phase: "Phase 5 (report imports)" },
   experiments: { title: "Experiments", text: "Structured tests of hooks, formats, and times.", phase: "Phase 6 (needs enough performance data)" },
   automations: { title: "Automations", text: "Daily limits, spend caps, failure thresholds, and per-platform pauses.", phase: "Phase 4" }
