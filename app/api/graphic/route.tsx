@@ -22,6 +22,14 @@ function fontFor(text: string, scale: number) {
 }
 
 export async function GET(req: Request) {
+  try {
+    return await render(req);
+  } catch (e: any) {
+    return new Response(`Image error: ${e?.message ?? String(e)}`, { status: 500, headers: { "content-type": "text/plain" } });
+  }
+}
+
+async function render(req: Request): Promise<Response> {
   const url = new URL(req.url);
   const id = url.searchParams.get("v") ?? "";
   if (!/^[0-9a-f-]{36}$/i.test(id)) return new Response("Bad request", { status: 400 });

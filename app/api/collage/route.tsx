@@ -9,12 +9,28 @@ export const dynamic = "force-dynamic";
 const keep = (t: string) =>
   t.replace(/[^ -~ -ÿ–—‘’“”…™•]/g, "").replace(/\s+/g, " ").trim();
 
-async function font(name: string) {
-  const res = await fetch(new URL(`./fonts/${name}.ttf`, import.meta.url));
-  return res.arrayBuffer();
-}
+type FontSet = { regular: string; bold: string; italic: string };
+const LOADERS: Record<string, () => Promise<FontSet>> = {
+  classic: () => import("@/lib/fonts/classic").then((m) => m.default),
+  modern: () => import("@/lib/fonts/modern").then((m) => m.default),
+  friendly: () => import("@/lib/fonts/friendly").then((m) => m.default),
+  elegant: () => import("@/lib/fonts/elegant").then((m) => m.default)
+};
+const bytes = (b64: string): ArrayBuffer => {
+  const b = Buffer.from(b64, "base64");
+  return b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) as ArrayBuffer;
+};
 
 export async function GET(req: Request) {
+  try {
+    return await render(req);
+  } catch (e: any) {
+    // Plain text so the real reason is visible in the browser instead of a blank error page.
+    return new Response(`Collage image error: ${e?.message ?? String(e)}`, { status: 500, headers: { "content-type": "text/plain" } });
+  }
+}
+
+async function render(req: Request): Promise<Response> {
   const url = new URL(req.url);
   const id = url.searchParams.get("v") ?? "";
   if (!/^[0-9a-f-]{36}$/i.test(id)) return new Response("Bad request", { status: 400 });
@@ -58,7 +74,8 @@ export async function GET(req: Request) {
   const width = isPin ? 1000 : 1080;
   const height = isPin ? 1500 : 1350;
   const rects = collageLayout(n, width, height);
-  const [regular, bold, italic] = await Promise.all([font(`${style.font}-regular`), font(`${style.font}-bold`), font(`${style.font}-italic`)]);
+  const set = await (LOADERS[style.font] ?? LOADERS.classic)();
+  const [regular, bold, italic] = [bytes(set.regular), bytes(set.bold), bytes(set.italic)];
 
   return new ImageResponse(
     (
