@@ -9,7 +9,7 @@ export async function getSetting<T>(supabase: Sb, orgId: string, key: string, fa
   return (data?.value ?? fallback) as T;
 }
 
-async function activeDisclosure(supabase: Sb, orgId: string, platform: string, retailerKeys: string[]) {
+export async function activeDisclosure(supabase: Sb, orgId: string, platform: string, retailerKeys: string[]) {
   const { data } = await supabase
     .from("disclosure_templates")
     .select("id, platform, program_key, body, status")

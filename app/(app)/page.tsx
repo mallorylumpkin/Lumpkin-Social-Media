@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getContext } from "@/lib/org";
+import { canWrite, getContext } from "@/lib/org";
+import { ensureWeeklyCollage } from "@/lib/collage";
 import { Flash, pick } from "@/components/Flash";
 
 export default async function TodayPage({
@@ -8,11 +9,14 @@ export default async function TodayPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
-  const { supabase, orgId } = await getContext();
+  const { supabase, orgId, user, role } = await getContext();
   if (!orgId) {
     // The layout shows the onboarding form; surface any error from it.
     return <Flash error={pick(sp.error)} />;
   }
+
+  // First visit of the week: build the weekly top-5 collage package (never blocks the page if it fails).
+  if (canWrite(role)) await ensureWeeklyCollage(supabase, orgId, user.id);
 
   const count = async (table: string, filter: (q: any) => any) => {
     const { count: c } = await filter(supabase.from(table).select("id", { count: "exact", head: true }).eq("org_id", orgId));

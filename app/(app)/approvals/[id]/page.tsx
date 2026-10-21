@@ -20,7 +20,7 @@ export default async function EditPage({
   return (
     <>
       <h1>Edit package</h1>
-      <p className="muted">{v.platform} · {String(v.content_type).replace("_", " ")}. Saving re-runs the rules check and returns it to the queue for approval. Keep the disclosure at the start of the caption.</p>
+      <p className="muted">{v.platform} · {String(v.content_type).replace("_", " ")}. Saving re-runs the rules check and returns it to the queue for approval. Keep the disclosure in the caption (the last line).</p>
       <Flash msg={pick(sp.msg)} error={pick(sp.error)} />
       <form action={saveEdit} className="card">
         <input type="hidden" name="id" value={v.id} />

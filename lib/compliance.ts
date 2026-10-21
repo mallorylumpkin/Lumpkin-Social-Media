@@ -19,6 +19,8 @@ export type PackageInput = {
   disclosureText: string | null;
   /** True when the disclosure wording came from a template the owner activated. */
   disclosureFromActiveTemplate: boolean;
+  /** Collage packages: product names that have no uploaded image yet. */
+  missingImages?: string[];
   products: {
     title: string;
     isSynthetic: boolean;
@@ -66,7 +68,7 @@ export function reviewPackage(p: PackageInput): { result: "pass" | "warn" | "blo
   } else {
     if (!p.disclosureFromActiveTemplate) add("disclosure_unverified", "block", "The disclosure did not come from a wording you activated on the Compliance page.", "caption");
     if (!caption.includes(disc.slice(0, 40))) add("disclosure_not_in_caption", "block", "The disclosure wording must appear in the caption text.", "caption");
-    else if (p.platform !== "pinterest" && caption.indexOf(disc.slice(0, 40)) > 110) add("disclosure_hidden", "warn", "Put the disclosure within the first line or two so it shows before 'more'.", "caption");
+    else if (p.platform !== "pinterest" && caption.indexOf(disc.slice(0, 40)) > 110) add("disclosure_at_end", "info", "The disclosure is at the end, as you chose. Instagram and TikTok hide long captions behind 'more', so a viewer may not see it unless they tap 'more'. This is your choice and it is recorded here.", "caption");
   }
 
   // 2. Products, links, rights
@@ -109,6 +111,9 @@ export function reviewPackage(p: PackageInput): { result: "pass" | "warn" | "blo
     if ((p.hook ?? "").length > 100) add("title_too_long", "block", `Pin title is ${(p.hook ?? "").length} characters; Pinterest allows 100.`, "hook");
   }
   if (p.discoveryTerms.length > 30) add("too_many_tags", "warn", "More than 30 hashtags/keywords.", "discovery_terms");
+
+  // 5b. Collages need an image for every product
+  for (const name of p.missingImages ?? []) add("collage_image_missing", "block", `No image uploaded for "${name}". Add one on the Product Images page, then regenerate the collage.`);
 
   // 6. Reminders that always apply
   add("media_rights", "info", "Create the visuals yourself (screen recordings, text graphics, your own product photos). Do not reuse other creators' videos or copy retailer images unless the program allows it.");

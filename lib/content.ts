@@ -88,13 +88,13 @@ export function parseDraft(raw: unknown): Draft | null {
   return d;
 }
 
-/** Build the final caption: disclosure first (so it shows before "more"), then body, call to action and tags. */
+/** Build the final caption: body, call to action and tags, with the disclosure as the very last line (owner's choice). */
 export function composeCaption(platform: Platform, disclosure: string | null, d: Pick<Draft, "captionBody" | "cta" | "discoveryTerms">): string {
   const parts: string[] = [];
-  if (disclosure) parts.push(disclosure);
   if (d.captionBody) parts.push(d.captionBody);
   if (d.cta) parts.push(d.cta);
   if (d.discoveryTerms.length) parts.push(d.discoveryTerms.slice(0, platform === "pinterest" ? 5 : 10).join(" "));
+  if (disclosure) parts.push(disclosure);
   return parts.join("\n\n");
 }
 

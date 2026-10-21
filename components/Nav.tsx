@@ -9,6 +9,8 @@ export const NAV_ITEMS: { href: string; label: string }[] = [
   { href: "/discover", label: "Discover" },
   { href: "/products", label: "Products" },
   { href: "/content", label: "Content Studio" },
+  { href: "/collages", label: "Collages" },
+  { href: "/images", label: "Product Images" },
   { href: "/approvals", label: "Approval Queue" },
   { href: "/calendar", label: "Calendar" },
   { href: "/storefronts", label: "Storefronts" },

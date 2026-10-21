@@ -60,7 +60,15 @@ export async function loadPackage(supabase: Sb, orgId: string, versionId: string
     });
   }
 
+  let missingImages: string[] | undefined;
+  if (v.creative_requirements === "collage") {
+    const { data: va } = await supabase.from("content_version_assets").select("position").eq("version_id", versionId);
+    const have = new Set((va ?? []).map((x: any) => x.position));
+    missingImages = products.filter((_, i) => !have.has(i)).map((p) => p.title);
+  }
+
   const input: PackageInput = {
+    missingImages,
     platform: v.platform, contentType: v.content_type, hook: v.hook, script: v.script, voiceover: v.voiceover, caption: v.caption, cta: v.cta,
     onScreenText: Array.isArray(v.on_screen_text) ? v.on_screen_text : [], shotList: Array.isArray(v.shot_list) ? v.shot_list : [],
     discoveryTerms: v.discovery_terms ?? [], disclosureText: v.disclosure_text,

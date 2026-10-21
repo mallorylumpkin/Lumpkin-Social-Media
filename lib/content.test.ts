@@ -9,9 +9,9 @@ describe("content helpers", () => {
     expect(d?.hook).toBe("a");
     expect(d?.discoveryTerms).toEqual(["#kitchen", "#home"]);
   });
-  it("puts the disclosure first", () => {
+  it("puts the disclosure last", () => {
     const c = composeCaption("tiktok", "DISC", { captionBody: "body", cta: "cta", discoveryTerms: ["#a"] });
-    expect(c.startsWith("DISC")).toBe(true);
+    expect(c.endsWith("DISC")).toBe(true);
   });
   it("template drafts pass the rules when a disclosure is active", () => {
     const products = [{ title: "Silicone Lunch Box", category: "Kitchen", retailer: "Walmart", facts: "" }];

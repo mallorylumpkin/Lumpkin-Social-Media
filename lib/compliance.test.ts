@@ -45,3 +45,11 @@ describe("reviewPackage", () => {
     expect(reviewPackage(pin).findings.some((x) => x.rule === "title_too_long")).toBe(true);
   });
 });
+
+describe("collage rule", () => {
+  it("blocks a collage with a missing image", () => {
+    const r = reviewPackage({ ...base, missingImages: ["Organizer"] });
+    expect(r.findings.some((x) => x.rule === "collage_image_missing")).toBe(true);
+    expect(r.result).toBe("block");
+  });
+});

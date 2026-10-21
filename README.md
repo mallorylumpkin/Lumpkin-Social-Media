@@ -9,6 +9,12 @@ Phase 1 includes sign-in, the dashboard shell, the product research inbox, manua
 4. Replace the files in your GitHub repo with the ones in this zip and push (Netlify rebuilds by itself).
 5. In the app: Content Studio > tick an approved product > paste 2 to 4 facts from its listing > **Generate with AI**. Then Approval Queue > Approve > Schedule. At post time open Calendar, copy, post, tap **Mark posted**.
 
+## Collages, product images and weekly top 5
+- Run `db/010_product_images_and_collages.sql` in the Supabase SQL Editor (creates a private image bucket).
+- **Product Images:** upload photos for approved products (tick the rights box). Images are stored privately and never copied from retailer sites.
+- **Collages:** make your own board, or let the app build a "top 5" collage the first time you open it each week. Ranking uses your imported sales, then clicks, then opportunity score.
+- Images carry no disclosure text. The disclosure is the last line of every caption.
+
 Without a key the **Quick draft (no AI)** button still works.
 
 The free Gemini tier is rate limited (Google shows your exact limits in AI Studio) and Google may use free-tier prompts to improve its products, so the app only sends product names and the facts you type. If you ever see "model not recognised", change `ai.model` in Settings.
