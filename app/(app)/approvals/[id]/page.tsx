@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Flash, pick } from "@/components/Flash";
+import { StyleFields } from "@/components/StyleFields";
+import { isCollage, parseStyle } from "@/lib/collage-style";
 import { requireOrg } from "@/lib/org";
 import { saveEdit } from "../actions";
 
@@ -24,6 +26,15 @@ export default async function EditPage({
       <Flash msg={pick(sp.msg)} error={pick(sp.error)} />
       <form action={saveEdit} className="card">
         <input type="hidden" name="id" value={v.id} />
+        {isCollage(v.creative_requirements) && (
+          <>
+            <input type="hidden" name="is_collage" value="1" />
+            <h3 style={{ marginTop: 0 }}>Collage look</h3>
+            <p className="muted small">Title lines are the first two lines of &quot;On-screen text&quot; below (small heading, then big title). The lines after that are the tags on each picture, in product order.</p>
+            <StyleFields style={parseStyle(v.creative_requirements)} idPrefix="edit_" />
+            <hr style={{ border: 0, borderTop: "1px solid var(--line)", margin: "14px 0" }} />
+          </>
+        )}
         <label htmlFor="hook">{v.platform === "pinterest" ? "Pin title" : "Hook"}</label>
         <input id="hook" type="text" name="hook" defaultValue={v.hook ?? ""} />
         <label htmlFor="caption">Caption (includes disclosure)</label>

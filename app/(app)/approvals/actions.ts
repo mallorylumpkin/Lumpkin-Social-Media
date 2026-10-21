@@ -7,6 +7,7 @@ import { canAdmin, canWrite, requireOrg } from "@/lib/org";
 import { runReview } from "@/lib/review";
 import { createPackage } from "@/lib/generate";
 import type { Format } from "@/lib/content";
+import { encodeStyle, styleFromForm } from "@/lib/collage-style";
 
 const s = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 const lines = (v: string) => v.split("\n").map((x) => x.trim()).filter(Boolean);
@@ -97,7 +98,8 @@ export async function saveEdit(formData: FormData) {
   const { error } = await supabase.from("content_versions").update({
     hook: s(formData, "hook") || null, caption: s(formData, "caption") || null, script: s(formData, "script") || null, voiceover: s(formData, "voiceover") || null,
     cta: s(formData, "cta") || null, on_screen_text: lines(s(formData, "on_screen_text")), shot_list: lines(s(formData, "shot_list")),
-    discovery_terms: s(formData, "discovery_terms").split(/[\s,]+/).filter(Boolean), status: "in_review", generated_by: "owner"
+    discovery_terms: s(formData, "discovery_terms").split(/[\s,]+/).filter(Boolean), status: "in_review", generated_by: "owner",
+    ...(formData.get("is_collage") === "1" ? { creative_requirements: encodeStyle(styleFromForm((k) => String(formData.get(k) ?? ""))) } : {})
   }).eq("id", id).eq("org_id", orgId);
   if (error) go(back, "error", error.message);
   const r = await runReview(supabase, orgId, id);

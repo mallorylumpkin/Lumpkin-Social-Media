@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Flash, pick } from "@/components/Flash";
 import { GraphicStrip } from "@/components/GraphicStrip";
+import { isCollage } from "@/lib/collage-style";
 import { LocalDateTime } from "@/components/LocalTime";
 import { requireOrg } from "@/lib/org";
 import { slotKey, STARTER_SLOTS } from "@/lib/scheduling";
@@ -68,7 +69,7 @@ export default async function ApprovalsPage({
             </div>
             {v.hook && <p style={{ margin: "10px 0 4px", fontWeight: 600 }}>{v.hook}</p>}
             <pre className="json" style={{ background: "var(--bg)", padding: 10, borderRadius: 10 }}>{v.caption}</pre>
-            <GraphicStrip versionId={v.id} platform={v.platform} onScreenText={v.on_screen_text} collage={v.creative_requirements === "collage"} />
+            <GraphicStrip versionId={v.id} platform={v.platform} onScreenText={v.on_screen_text} collage={isCollage(v.creative_requirements)} />
             <details style={{ marginTop: 8 }}>
               <summary>Script, shots and on-screen text</summary>
               {v.script && <p><strong>Script:</strong> {v.script}</p>}
@@ -87,7 +88,7 @@ export default async function ApprovalsPage({
             <div className="actions">
               <form action={approveVersion}><input type="hidden" name="id" value={v.id} /><button className="primary" type="submit" disabled={blocked}>Approve</button></form>
               <Link className="btn" href={`/approvals/${v.id}`}>Edit</Link>
-              {v.creative_requirements !== "collage" && (
+              {!isCollage(v.creative_requirements) && (
                 <form action={regenerateVersion}><input type="hidden" name="id" value={v.id} /><button type="submit" name="mode" value="ai">Regenerate (AI)</button></form>
               )}
               <form action={rejectVersion}><input type="hidden" name="id" value={v.id} /><button className="danger" type="submit">Reject</button></form>

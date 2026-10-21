@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CopyButton } from "@/components/CopyButton";
 import { GraphicStrip } from "@/components/GraphicStrip";
+import { isCollage } from "@/lib/collage-style";
 import { Flash, pick } from "@/components/Flash";
 import { LocalTime } from "@/components/LocalTime";
 import { requireOrg } from "@/lib/org";
@@ -50,7 +51,7 @@ export default async function CalendarPage({
                 {v.hook && <p style={{ margin: "10px 0 4px", fontWeight: 600 }}>{v.hook}</p>}
                 <pre className="json" style={{ background: "var(--bg)", padding: 10, borderRadius: 10 }}>{v.caption}</pre>
                 <div className="actions"><CopyButton text={v.caption ?? ""} label="Copy caption" /></div>
-                <GraphicStrip versionId={v.id} platform={v.platform} onScreenText={v.on_screen_text} collage={v.creative_requirements === "collage"} />
+                <GraphicStrip versionId={v.id} platform={v.platform} onScreenText={v.on_screen_text} collage={isCollage(v.creative_requirements)} />
                 {pkg!.products.map((p: { id: string; title: string; retailerName: string; link: string | null }) => (
                   <div key={p.id} style={{ marginTop: 10 }}>
                     <div className="small"><strong>{p.title}</strong> ({p.retailerName}) link for this channel:</div>

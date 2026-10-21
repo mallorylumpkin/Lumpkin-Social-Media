@@ -1,6 +1,7 @@
 // Collage helpers: layout maths, "top products" ranking, and package creation.
 import { activeDisclosure, getSetting } from "@/lib/generate";
 import { runReview } from "@/lib/review";
+import { DEFAULT_STYLE, encodeStyle, normalizeStyle, type CollageStyle } from "@/lib/collage-style";
 
 type Sb = any;
 
@@ -108,7 +109,7 @@ const short = (t: string, n: number) => (t.length <= n ? t : t.slice(0, n - 1).t
 
 export type CollageArgs = {
   supabase: Sb; orgId: string; userId: string; productIds: string[]; title: string; subtitle: string; labels: string[];
-  platforms: ("pinterest" | "instagram")[]; keyPrefix: string;
+  platforms: ("pinterest" | "instagram")[]; keyPrefix: string; style: CollageStyle;
 };
 
 export async function createCollage(a: CollageArgs): Promise<{ versionIds: string[] } | { error: string }> {
@@ -149,7 +150,7 @@ export async function createCollage(a: CollageArgs): Promise<{ versionIds: strin
         org_id: orgId, idea_id: idea.id, version_no: 1, platform, content_type: isPin ? "pin" : "static_post", status: "in_review",
         hook: short(`${a.title}: ${a.subtitle}`, 100), caption, cta, disclosure_template_id: disc.templateId, disclosure_text: disc.text,
         discovery_terms: tags.split(" "), on_screen_text: [a.title, a.subtitle, ...a.productIds.map((_, i) => a.labels[i] ?? "")],
-        claim_sources: [], generated_by: "agent", prompt_version: "collage1", model_ref: "collage", creative_requirements: "collage",
+        claim_sources: [], generated_by: "agent", prompt_version: "collage1", model_ref: "collage", creative_requirements: encodeStyle(a.style),
         tracking_key: `${a.keyPrefix}-${platform.slice(0, 2)}`
       })
       .select("id").single();
@@ -175,8 +176,9 @@ export async function ensureWeeklyCollage(supabase: Sb, orgId: string, userId: s
     if (existing && existing.length) return "exists";
     const { products, basis } = await rankTopProducts(supabase, orgId, 5, true);
     if (products.length < 3) return "skipped";
+    const style = normalizeStyle(await getSetting<Partial<CollageStyle>>(supabase, orgId, "collage.style", DEFAULT_STYLE));
     const subtitle = basis === "sales" ? `Top ${products.length} Best Sellers` : basis === "clicks" ? `Top ${products.length} Most Clicked` : `Top ${products.length} Picks`;
-    const res = await createCollage({ supabase, orgId, userId, productIds: products.map((p) => p.id), title: "This Week's Favorites", subtitle, labels: products.map((_, i) => `#${i + 1}`), platforms: ["pinterest", "instagram"], keyPrefix: prefix });
+    const res = await createCollage({ supabase, orgId, userId, productIds: products.map((p) => p.id), title: "This Week's Favorites", subtitle, labels: products.map((_, i) => `#${i + 1}`), platforms: ["pinterest", "instagram"], keyPrefix: prefix, style });
     return "error" in res ? "skipped" : "created";
   } catch {
     return "skipped";

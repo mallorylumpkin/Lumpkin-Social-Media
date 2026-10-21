@@ -13,6 +13,8 @@ Phase 1 includes sign-in, the dashboard shell, the product research inbox, manua
 - Run `db/010_product_images_and_collages.sql` in the Supabase SQL Editor (creates a private image bucket).
 - **Product Images:** upload photos for approved products (tick the rights box). Images are stored privately and never copied from retailer sites.
 - **Collages:** make your own board, or let the app build a "top 5" collage the first time you open it each week. Ranking uses your imported sales, then clicks, then opportunity score.
+- **Collage style:** pick a title preset (or custom), a font and a color scheme, or your own brand colors, and save them as your default on the Collages page. The weekly collage uses your default. You can change a collage's look from its Edit page too.
+- Uploads can remove a plain background automatically (works best on clean product shots).
 - Images carry no disclosure text. The disclosure is the last line of every caption.
 
 Without a key the **Quick draft (no AI)** button still works.

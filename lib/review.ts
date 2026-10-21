@@ -1,5 +1,6 @@
 import { reviewPackage, RULES_VERSION, type PackageInput } from "@/lib/compliance";
 import { withTag } from "@/lib/links";
+import { isCollage } from "@/lib/collage-style";
 
 type Sb = any;
 
@@ -61,7 +62,7 @@ export async function loadPackage(supabase: Sb, orgId: string, versionId: string
   }
 
   let missingImages: string[] | undefined;
-  if (v.creative_requirements === "collage") {
+  if (isCollage(v.creative_requirements)) {
     const { data: va } = await supabase.from("content_version_assets").select("position").eq("version_id", versionId);
     const have = new Set((va ?? []).map((x: any) => x.position));
     missingImages = products.filter((_, i) => !have.has(i)).map((p) => p.title);

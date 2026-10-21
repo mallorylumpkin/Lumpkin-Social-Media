@@ -2,7 +2,10 @@ import Link from "next/link";
 import { Flash, pick } from "@/components/Flash";
 import { requireOrg } from "@/lib/org";
 import { weekKey } from "@/lib/collage";
-import { makeCollage, makeWeeklyNow } from "./actions";
+import { DEFAULT_STYLE, normalizeStyle, TITLE_PRESETS } from "@/lib/collage-style";
+import { getSetting } from "@/lib/generate";
+import { StyleFields } from "@/components/StyleFields";
+import { makeCollage, makeWeeklyNow, saveDefaultStyle } from "./actions";
 
 export default async function CollagesPage({
   searchParams
@@ -16,6 +19,7 @@ export default async function CollagesPage({
     supabase.from("content_versions").select("id, platform, status").eq("org_id", orgId).like("tracking_key", `mlk-collage-${weekKey()}-%`)
   ]);
   const withImg = ((products ?? []) as any[]).map((p) => ({ ...p, hasImage: (p.content_assets ?? []).some((a: any) => !a.deleted_at && a.asset_type === "image" && a.storage_ref) }));
+  const style = normalizeStyle(await getSetting<any>(supabase, orgId, "collage.style", DEFAULT_STYLE));
   const ready = withImg.filter((p) => p.hasImage && !p.is_synthetic).length;
 
   return (
@@ -39,13 +43,28 @@ export default async function CollagesPage({
         )}
       </div>
 
+      <form action={saveDefaultStyle} className="card">
+        <h2>My default style</h2>
+        <p className="muted small">Used for the weekly collage and as the starting choice for new ones. Set your brand colors here once.</p>
+        <StyleFields style={style} idPrefix="def_" />
+        <div className="actions"><button type="submit">Save default style</button></div>
+      </form>
+
       <form action={makeCollage}>
         <div className="card">
           <h2>Make your own collage</h2>
-          <label htmlFor="title">Small heading</label>
+          <label htmlFor="preset">Title</label>
+          <select id="preset" name="preset" defaultValue="finds">
+            {TITLE_PRESETS.map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}
+            <option value="custom">Custom (use the two boxes below)</option>
+          </select>
+          <p className="muted small" style={{ marginBottom: 0 }}>For the custom option: a small heading above and a big title. Presets show the real number of products you pick.</p>
+          <label htmlFor="title">Custom small heading</label>
           <input id="title" type="text" name="title" defaultValue="This Year's Favorite" maxLength={40} />
-          <label htmlFor="subtitle">Big title</label>
+          <label htmlFor="subtitle">Custom big title</label>
           <input id="subtitle" type="text" name="subtitle" defaultValue="Summer Finds" maxLength={40} />
+          <StyleFields style={style} idPrefix="new_" />
+          <label className="check"><input type="checkbox" name="save_default" /> Save this font and color choice as my default</label>
           <label>Products (pick 2 to 6, in the order you want)</label>
           {withImg.length === 0 && <p className="muted small">No approved products yet.</p>}
           {withImg.map((p) => (
