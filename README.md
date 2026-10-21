@@ -4,8 +4,8 @@ Phase 1 includes sign-in, the dashboard shell, the product research inbox, manua
 
 ## Updating from Phase 1 or 2 to Phase 3 (about 10 minutes)
 1. **Supabase > SQL Editor:** paste and run the file `db/009_ai_usage_and_content_settings.sql` (safe to run twice).
-2. **Free AI key:** go to aistudio.google.com/apikey, sign in with Google, create a key.
-3. **Netlify > Site configuration > Environment variables:** add `GEMINI_API_KEY` = your key (do NOT tick any "expose to browser" option). Then **Deploys > Trigger deploy**.
+2. **Free AI key:** go to console.groq.com/keys, sign up, create a key (Gemini at aistudio.google.com/apikey also works if Google allows your project).
+3. **Netlify > Site configuration > Environment variables:** add `GROQ_API_KEY` = your key (or `GEMINI_API_KEY`) (do NOT tick any "expose to browser" option). Then **Deploys > Trigger deploy**.
 4. Replace the files in your GitHub repo with the ones in this zip and push (Netlify rebuilds by itself).
 5. In the app: Content Studio > tick an approved product > paste 2 to 4 facts from its listing > **Generate with AI**. Then Approval Queue > Approve > Schedule. At post time open Calendar, copy, post, tap **Mark posted**.
 

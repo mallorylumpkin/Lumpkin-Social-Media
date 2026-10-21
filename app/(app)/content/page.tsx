@@ -72,7 +72,7 @@ export default async function ContentStudioPage({
               <button className="primary" type="submit" name="mode" value="ai">Generate with AI (free)</button>
               <button type="submit" name="mode" value="template">Quick draft (no AI)</button>
             </div>
-            <p className="muted small">AI calls today: {used ?? 0}. Uses Google&apos;s free Gemini tier, so there is no cost. Only product names and the facts you type are sent: never personal details.</p>
+            <p className="muted small">AI calls today: {used ?? 0}. Uses a free AI service (Groq or Gemini), so there is no cost. Only product names and the facts you type are sent: never personal details.</p>
           </div>
         </form>
       )}

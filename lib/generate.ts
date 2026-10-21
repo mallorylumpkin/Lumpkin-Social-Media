@@ -59,8 +59,14 @@ export async function createPackage(a: GenerateArgs): Promise<{ versionId: strin
   let draft: Draft | null = null;
   let modelRef = "template";
   if (a.mode === "ai") {
-    const provider = await getSetting<string>(supabase, orgId, "ai.provider", "gemini");
-    const model = process.env.AI_MODEL || (await getSetting<string>(supabase, orgId, "ai.model", "gemini-2.5-flash"));
+    let provider = await getSetting<string>(supabase, orgId, "ai.provider", "gemini");
+    // No Gemini key but a Groq key present: use Groq automatically.
+    if (provider === "gemini" && !process.env.GEMINI_API_KEY && process.env.GROQ_API_KEY) provider = "groq";
+    const model =
+      process.env.AI_MODEL ||
+      (provider === "groq"
+        ? await getSetting<string>(supabase, orgId, "ai.model_groq", "openai/gpt-oss-120b")
+        : await getSetting<string>(supabase, orgId, "ai.model", "gemini-3.5-flash-lite"));
     const cap = Number(await getSetting<number>(supabase, orgId, "ai.daily_request_cap", 40));
     const since = new Date(); since.setUTCHours(0, 0, 0, 0);
     const { count } = await supabase.from("ai_usage").select("id", { count: "exact", head: true }).eq("org_id", orgId).gte("created_at", since.toISOString());
