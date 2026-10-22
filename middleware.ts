@@ -30,7 +30,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isPublic = path.startsWith("/login");
+  const isPublic = path.startsWith("/login") || path === "/manifest.webmanifest" || path.startsWith("/api/pwa-icon");
 
   if (!user && !isPublic) {
     const redirect = request.nextUrl.clone();
