@@ -24,6 +24,10 @@ Add `AMAZON_CREATORS_CLIENT_ID` and `AMAZON_CREATORS_CLIENT_SECRET` in Netlify (
 - **Products > Refresh Amazon prices:** re-checks prices (Amazon allows keeping prices up to 24 hours).
 Product images from this API are not used: Amazon does not allow storing them or using them in social posts.
 
+## Photos on Add product, faster uploads, imported collages
+- **Add product** now takes photos in the same step (optional). Product Images accepts drag-and-drop and pasted screenshots too.
+- **Collages > Import a collage you made elsewhere:** upload a finished collage (for example from Amazon's Create Content > Collage) and it goes through caption, rules check, approval and calendar.
+
 Without a key the **Quick draft (no AI)** button still works.
 
 The free Gemini tier is rate limited (Google shows your exact limits in AI Studio) and Google may use free-tier prompts to improve its products, so the app only sends product names and the facts you type. If you ever see "model not recognised", change `ai.model` in Settings.
