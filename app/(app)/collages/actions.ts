@@ -35,7 +35,7 @@ export async function makeCollage(formData: FormData) {
   const preset = TITLE_PRESETS.find((p) => p.key === get("preset"));
   const title = (preset ? fillTitle(preset.kicker, ids.length) : get("title").trim().slice(0, 40)) || "My Favorites";
   const subtitle = (preset ? fillTitle(preset.title, ids.length) : get("subtitle").trim().slice(0, 40)) || "";
-  const platforms = formData.getAll("platform").map(String).filter((p): p is "pinterest" | "instagram" => p === "pinterest" || p === "instagram");
+  const platforms = formData.getAll("platform").map(String).filter((p): p is "pinterest" | "instagram" | "tiktok" => p === "pinterest" || p === "instagram" || p === "tiktok");
   const labels = ids.map((id) => get(`label_${id}`).trim().slice(0, 28));
   const style = styleFromForm(get);
 
@@ -77,7 +77,7 @@ export async function importCollage(formData: FormData): Promise<ImportResult | 
   if (formData.get("rights") !== "yes") return { ok: false, error: "Tick the box confirming you have the right to use and share this image." };
   const ids = formData.getAll("product_id").map(String);
   if (ids.length < 1 || ids.length > 6) return { ok: false, error: "Pick the product or products shown in the collage (1 to 6) so their links and disclosure can be checked." };
-  const platforms = formData.getAll("platform").map(String).filter((p): p is "pinterest" | "instagram" => p === "pinterest" || p === "instagram");
+  const platforms = formData.getAll("platform").map(String).filter((p): p is "pinterest" | "instagram" | "tiktok" => p === "pinterest" || p === "instagram" || p === "tiktok");
   if (!platforms.length) return { ok: false, error: "Choose Pinterest, Instagram or both." };
   const source = ["owner_provided", "retailer_permitted"].includes(get("source")) ? get("source") : "retailer_permitted";
 

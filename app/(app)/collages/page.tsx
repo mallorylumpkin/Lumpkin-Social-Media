@@ -82,6 +82,7 @@ export default async function CollagesPage({
           <label>Make it for</label>
           <label className="check"><input type="checkbox" name="platform" value="pinterest" defaultChecked /> Pinterest pin (tall)</label>
           <label className="check"><input type="checkbox" name="platform" value="instagram" defaultChecked /> Instagram post</label>
+          <label className="check"><input type="checkbox" name="platform" value="tiktok" /> TikTok photo post</label>
           <p className="muted small">Tags are checked by the rules engine like any other text (for example, price claims are blocked for Amazon products).</p>
           <div className="actions"><button className="primary" type="submit">Create collage</button></div>
         </div>

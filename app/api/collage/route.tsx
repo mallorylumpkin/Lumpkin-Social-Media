@@ -1,3 +1,4 @@
+import { collageFooter } from "@/lib/handles";
 import { ImageResponse } from "next/og";
 import { createClient } from "@/lib/supabase/server";
 import { collageLayout } from "@/lib/collage";
@@ -85,6 +86,8 @@ async function render(req: Request): Promise<Response> {
 
   const style = parseStyle(v.creative_requirements);
   const c = resolveScheme(style);
+  const { data: acct } = await supabase.from("social_accounts").select("handle").eq("platform", v.platform).is("deleted_at", null).neq("handle", "planned").limit(1).maybeSingle();
+  const footerText = collageFooter(v.platform, acct?.handle);
   const isPin = v.platform === "pinterest";
   const width = isPin ? 1000 : 1080;
   const height = isPin ? 1500 : 1350;
@@ -126,7 +129,7 @@ async function render(req: Request): Promise<Response> {
             ) : null}
           </div>
         ))}
-        <div style={{ position: "absolute", left: 0, right: 0, bottom: 84, display: "flex", justifyContent: "center", fontSize: 46, fontStyle: "italic", color: c.muted }}>Mallory Lumpkin</div>
+        <div style={{ position: "absolute", left: 0, right: 0, bottom: 84, display: "flex", justifyContent: "center", fontSize: 46, fontStyle: "italic", color: c.muted }}>{footerText}</div>
       </div>
     ),
     {

@@ -109,7 +109,7 @@ const short = (t: string, n: number) => (t.length <= n ? t : t.slice(0, n - 1).t
 
 export type CollageArgs = {
   supabase: Sb; orgId: string; userId: string; productIds: string[]; title: string; subtitle: string; labels: string[];
-  platforms: ("pinterest" | "instagram")[]; keyPrefix: string; style: CollageStyle;
+  platforms: ("pinterest" | "instagram" | "tiktok")[]; keyPrefix: string; style: CollageStyle;
   /** A finished collage image you uploaded. When set, the app uses it instead of drawing one. */
   importedAssetId?: string;
 };
