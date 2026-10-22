@@ -110,6 +110,8 @@ const short = (t: string, n: number) => (t.length <= n ? t : t.slice(0, n - 1).t
 export type CollageArgs = {
   supabase: Sb; orgId: string; userId: string; productIds: string[]; title: string; subtitle: string; labels: string[];
   platforms: ("pinterest" | "instagram")[]; keyPrefix: string; style: CollageStyle;
+  /** A finished collage image you uploaded. When set, the app uses it instead of drawing one. */
+  importedAssetId?: string;
 };
 
 export async function createCollage(a: CollageArgs): Promise<{ versionIds: string[] } | { error: string }> {
@@ -126,7 +128,7 @@ export async function createCollage(a: CollageArgs): Promise<{ versionIds: strin
     .from("content_assets").select("id, product_id, created_at").eq("org_id", orgId).eq("asset_type", "image").eq("license_status", "documented")
     .is("deleted_at", null).not("storage_ref", "is", null).in("product_id", a.productIds).order("created_at", { ascending: false });
   const best = new Map<string, string>();
-  for (const x of assets ?? []) if (!best.has(x.product_id)) best.set(x.product_id, x.id);
+  if (!a.importedAssetId) for (const x of assets ?? []) if (!best.has(x.product_id)) best.set(x.product_id, x.id);
 
   const { data: idea, error: iErr } = await supabase
     .from("content_ideas")
@@ -150,7 +152,7 @@ export async function createCollage(a: CollageArgs): Promise<{ versionIds: strin
         org_id: orgId, idea_id: idea.id, version_no: 1, platform, content_type: isPin ? "pin" : "static_post", status: "in_review",
         hook: short(`${a.title}: ${a.subtitle}`, 100), caption, cta, disclosure_template_id: disc.templateId, disclosure_text: disc.text,
         discovery_terms: tags.split(" "), on_screen_text: [a.title, a.subtitle, ...a.productIds.map((_, i) => a.labels[i] ?? "")],
-        claim_sources: [], generated_by: "agent", prompt_version: "collage1", model_ref: "collage", creative_requirements: encodeStyle(a.style),
+        claim_sources: [], generated_by: "agent", prompt_version: "collage1", model_ref: "collage", creative_requirements: a.importedAssetId ? "import" : encodeStyle(a.style),
         tracking_key: `${a.keyPrefix}-${platform.slice(0, 2)}`
       })
       .select("id").single();
@@ -158,7 +160,9 @@ export async function createCollage(a: CollageArgs): Promise<{ versionIds: strin
       if (!versionIds.length) await supabase.from("content_ideas").delete().eq("id", idea.id).eq("org_id", orgId);
       return { error: error?.code === "23505" ? "This collage already exists." : error?.message ?? "Could not save the collage." };
     }
-    const links = a.productIds.map((pid, i) => (best.has(pid) ? { version_id: ver.id, asset_id: best.get(pid)!, org_id: orgId, role: "collage_tile", position: i } : null)).filter(Boolean);
+    const links = a.importedAssetId
+      ? [{ version_id: ver.id, asset_id: a.importedAssetId, org_id: orgId, role: "imported_collage", position: 0 }]
+      : a.productIds.map((pid, i) => (best.has(pid) ? { version_id: ver.id, asset_id: best.get(pid)!, org_id: orgId, role: "collage_tile", position: i } : null)).filter(Boolean);
     if (links.length) await supabase.from("content_version_assets").insert(links as any[]);
     versionIds.push(ver.id as string);
   }

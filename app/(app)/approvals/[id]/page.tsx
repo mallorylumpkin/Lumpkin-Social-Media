@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Flash, pick } from "@/components/Flash";
 import { StyleFields } from "@/components/StyleFields";
-import { isCollage, parseStyle } from "@/lib/collage-style";
+import { isCollage, isImported, parseStyle } from "@/lib/collage-style";
 import { requireOrg } from "@/lib/org";
 import { saveEdit } from "../actions";
 
@@ -26,7 +26,7 @@ export default async function EditPage({
       <Flash msg={pick(sp.msg)} error={pick(sp.error)} />
       <form action={saveEdit} className="card">
         <input type="hidden" name="id" value={v.id} />
-        {isCollage(v.creative_requirements) && (
+        {isCollage(v.creative_requirements) && !isImported(v.creative_requirements) && (
           <>
             <input type="hidden" name="is_collage" value="1" />
             <h3 style={{ marginTop: 0 }}>Collage look</h3>

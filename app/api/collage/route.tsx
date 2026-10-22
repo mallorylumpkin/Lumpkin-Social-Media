@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { createClient } from "@/lib/supabase/server";
 import { collageLayout } from "@/lib/collage";
-import { parseStyle, resolveScheme } from "@/lib/collage-style";
+import { isImported, parseStyle, resolveScheme } from "@/lib/collage-style";
 
 // Renders a collage board (PNG) from the product images you uploaded. Nothing is fetched from retailer sites.
 export const dynamic = "force-dynamic";
@@ -43,6 +43,21 @@ async function render(req: Request): Promise<Response> {
 
   const { data: v } = await supabase.from("content_versions").select("id, idea_id, platform, content_type, on_screen_text, creative_requirements").eq("id", id).maybeSingle();
   if (!v) return new Response("Not found", { status: 404 });
+
+  // A finished collage you uploaded: return that image as it is.
+  if (isImported(v.creative_requirements)) {
+    const { data: link } = await supabase.from("content_version_assets").select("content_assets(storage_ref)").eq("version_id", id).eq("position", 0).maybeSingle();
+    const ref = (link as any)?.content_assets?.storage_ref as string | undefined;
+    if (!ref) return new Response("No image attached", { status: 404 });
+    const { data: blob } = await supabase.storage.from("product-images").download(ref);
+    if (!blob) return new Response("Image not found", { status: 404 });
+    return new Response(blob, {
+      headers: {
+        "content-type": blob.type || "image/jpeg", "cache-control": "private, no-store",
+        ...(url.searchParams.get("dl") ? { "content-disposition": `attachment; filename="collage-${v.platform}.${ref.endsWith(".png") ? "png" : "jpg"}"` } : {})
+      }
+    });
+  }
 
   const [{ data: prodRows }, { data: assetRows }] = await Promise.all([
     supabase.from("content_idea_products").select("position, products(canonical_title)").eq("idea_id", v.idea_id).order("position"),

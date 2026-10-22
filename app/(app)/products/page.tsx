@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Flash, money, pick } from "@/components/Flash";
 import { requireOrg } from "@/lib/org";
+import { creatorsConfigured } from "@/lib/amazon-creators";
+import { refreshAmazonPrices } from "./actions";
 
 const FILTERS = ["all", "candidate", "watching", "approved", "rejected", "paused", "retired"];
 
@@ -30,7 +32,10 @@ export default async function ProductsPage({
           <h1>Products</h1>
           <p className="muted">Your catalog. One product can have offers at several retailers.</p>
         </div>
-        <Link className="btn primary" href="/products/new">Add product</Link>
+        <div className="row">
+          {creatorsConfigured() && <form action={refreshAmazonPrices}><button type="submit">Refresh Amazon prices</button></form>}
+          <Link className="btn primary" href="/products/new">Add product</Link>
+        </div>
       </div>
       <Flash msg={pick(sp.msg)} error={pick(sp.error) ?? error?.message} />
 

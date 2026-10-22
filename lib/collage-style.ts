@@ -58,7 +58,9 @@ export function styleFromForm(get: (k: string) => string): CollageStyle {
 }
 
 // A collage package stores its look in creative_requirements as: collage:{"font":"classic","scheme":"cream"}
-export const isCollage = (v: string | null | undefined): boolean => !!v && v.startsWith("collage");
+// "collage:{...}" = drawn by this app. "import" = a finished collage image you uploaded (for example from Amazon's Create Content tool).
+export const isImported = (v: string | null | undefined): boolean => !!v && v.startsWith("import");
+export const isCollage = (v: string | null | undefined): boolean => !!v && (v.startsWith("collage") || v.startsWith("import"));
 export const encodeStyle = (s: CollageStyle): string => `collage:${JSON.stringify(s)}`;
 export function parseStyle(v: string | null | undefined): CollageStyle {
   if (!v || !v.startsWith("collage:")) return DEFAULT_STYLE;

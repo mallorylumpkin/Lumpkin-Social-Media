@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { requireOrg } from "@/lib/org";
 
 const SECTIONS: Record<string, { title: string; text: string; phase: string }> = {
-  discover: { title: "Discover", text: "Scored product cards from trend signals and your research.", phase: "Phase 2 (trend signals and sources)" },
   analytics: { title: "Analytics", text: "Clicks, commissions, and earnings per click from your imported reports, labeled reported or estimated.", phase: "Phase 5 (report imports)" },
   experiments: { title: "Experiments", text: "Structured tests of hooks, formats, and times.", phase: "Phase 6 (needs enough performance data)" },
   automations: { title: "Automations", text: "Daily limits, spend caps, failure thresholds, and per-platform pauses.", phase: "Phase 4" }

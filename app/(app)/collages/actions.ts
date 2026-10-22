@@ -64,3 +64,37 @@ export async function saveDefaultStyle(formData: FormData) {
   if (error) go("error", `Could not save: ${error.message}`);
   go("msg", "Saved. New collages (including the weekly one) will use this style.");
 }
+
+type ImportResult = { ok: false; error: string };
+
+/** A finished collage image you made elsewhere (for example in Amazon's Create Content tool) becomes a package for approval. */
+export async function importCollage(formData: FormData): Promise<ImportResult | void> {
+  const { supabase, orgId, user, role } = await requireOrg();
+  if (!canWrite(role)) return { ok: false, error: "Your role cannot import collages." };
+  const get = (k: string) => String(formData.get(k) ?? "");
+  const path = get("path");
+  if (!path.startsWith(`${orgId}/imports/`)) return { ok: false, error: "That upload does not belong to this workspace." };
+  if (formData.get("rights") !== "yes") return { ok: false, error: "Tick the box confirming you have the right to use and share this image." };
+  const ids = formData.getAll("product_id").map(String);
+  if (ids.length < 1 || ids.length > 6) return { ok: false, error: "Pick the product or products shown in the collage (1 to 6) so their links and disclosure can be checked." };
+  const platforms = formData.getAll("platform").map(String).filter((p): p is "pinterest" | "instagram" => p === "pinterest" || p === "instagram");
+  if (!platforms.length) return { ok: false, error: "Choose Pinterest, Instagram or both." };
+  const source = ["owner_provided", "retailer_permitted"].includes(get("source")) ? get("source") : "retailer_permitted";
+
+  const { data: asset, error: aErr } = await supabase
+    .from("content_assets")
+    .insert({
+      org_id: orgId, asset_type: "image", source_type: source, license_status: "documented", license_ref: get("note").trim().slice(0, 300) || "Owner confirmed rights at import",
+      storage_ref: path, rights_verified_by: user.id, rights_verified_at: new Date().toISOString()
+    })
+    .select("id").single();
+  if (aErr || !asset) return { ok: false, error: aErr?.message ?? "Could not save the image." };
+
+  const title = get("title").trim().slice(0, 40) || "Top Finds";
+  const res = await createCollage({
+    supabase, orgId, userId: user.id, productIds: ids, title, subtitle: get("subtitle").trim().slice(0, 40) || "Shop the look", labels: [], platforms,
+    keyPrefix: `mlk-collage-i-${Math.random().toString(36).slice(2, 9)}`, style: DEFAULT_STYLE, importedAssetId: asset.id as string
+  });
+  if ("error" in res) return { ok: false, error: res.error };
+  go("msg", "Imported. Review the caption and approve it in the Approval Queue.", "/approvals");
+}

@@ -5,6 +5,7 @@ import { weekKey } from "@/lib/collage";
 import { DEFAULT_STYLE, normalizeStyle, TITLE_PRESETS } from "@/lib/collage-style";
 import { getSetting } from "@/lib/generate";
 import { StyleFields } from "@/components/StyleFields";
+import { CollageImporter } from "@/components/CollageImporter";
 import { makeCollage, makeWeeklyNow, saveDefaultStyle } from "./actions";
 
 export default async function CollagesPage({
@@ -42,6 +43,8 @@ export default async function CollagesPage({
           <form action={makeWeeklyNow}><button className="primary" type="submit">Make this week&apos;s collage now</button></form>
         )}
       </div>
+
+      <CollageImporter orgId={orgId} products={withImg.filter((p) => !p.is_synthetic).map((p) => ({ id: p.id, title: p.canonical_title }))} />
 
       <form action={saveDefaultStyle} className="card">
         <h2>My default style</h2>

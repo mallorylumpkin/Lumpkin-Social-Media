@@ -17,6 +17,13 @@ Phase 1 includes sign-in, the dashboard shell, the product research inbox, manua
 - Uploads can remove a plain background automatically (works best on clean product shots).
 - Images carry no disclosure text. The disclosure is the last line of every caption.
 
+## Amazon Creators API (automatic product details and Discover)
+Add `AMAZON_CREATORS_CLIENT_ID` and `AMAZON_CREATORS_CLIENT_SECRET` in Netlify (mark both secret) and redeploy. Then:
+- **Add product:** paste an Amazon link and the name, price and your affiliate link are filled in.
+- **Discover:** search Amazon, see price and sales rank, add good ones to the Research Inbox.
+- **Products > Refresh Amazon prices:** re-checks prices (Amazon allows keeping prices up to 24 hours).
+Product images from this API are not used: Amazon does not allow storing them or using them in social posts.
+
 Without a key the **Quick draft (no AI)** button still works.
 
 The free Gemini tier is rate limited (Google shows your exact limits in AI Studio) and Google may use free-tier prompts to improve its products, so the app only sends product names and the facts you type. If you ever see "model not recognised", change `ai.model` in Settings.
